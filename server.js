@@ -9,6 +9,7 @@ app.use(
     credentials: true,
   }),
 );
+const mongoose = require("mongoose");
 const server = http.createServer(app);
 //
 const { Socket } = require("./src/controllers/socket");
@@ -16,7 +17,17 @@ const { Socket } = require("./src/controllers/socket");
 Socket(server);
 //
 const port = process.env.SERVER_PORT | 3000;
-server.listen(port, () => {
-  console.log(`server runing on port ${port}`);
-});
-console.log("hi");
+const DATABASE_URL = process.env.DATABASE_URL_PRO
+  ? process.env.DATABASE_URL_PRO
+  : process.env.DATABASE_URL_DEV;
+mongoose
+  .connect(DATABASE_URL)
+  .then((e) => {
+    console.log("connected to database");
+    server.listen(port, () => {
+      console.log(`server runing on port ${port}`);
+    });
+  })
+  .catch((er) => {
+    console.log(`database error :${er}`);
+  });
