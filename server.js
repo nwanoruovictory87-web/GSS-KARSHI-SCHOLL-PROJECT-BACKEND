@@ -31,3 +31,8 @@ mongoose
   .catch((er) => {
     console.log(`database error :${er}`);
   });
+//import routes
+const studentsData = require("./src/controllers/studentsData");
+
+//use routes
+app.use("/students", studentsData);
