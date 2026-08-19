@@ -10,7 +10,6 @@ app.use(
   }),
 );
 app.use(express.json());
-const mongoose = require("mongoose");
 const server = http.createServer(app);
 //
 const { Socket } = require("./src/controllers/socket");
@@ -18,9 +17,13 @@ const { Socket } = require("./src/controllers/socket");
 Socket(server);
 //
 const port = process.env.SERVER_PORT | 3000;
+
+/*
 const DATABASE_URL = process.env.DATABASE_URL_PRO
   ? process.env.DATABASE_URL_PRO
   : process.env.DATABASE_URL_DEV;
+*/
+/*
 mongoose
   .connect(DATABASE_URL)
   .then((e) => {
@@ -32,8 +35,15 @@ mongoose
   .catch((er) => {
     console.log(`database error :${er}`);
   });
+*/
+const database = new Set();
+server.listen(port, () => {
+  console.log(`server runing on port ${port}`);
+});
 //import routes
 const studentsData = require("./src/controllers/studentsData");
 
 //use routes
 app.use("/students", studentsData);
+//
+module.exports = { database };
