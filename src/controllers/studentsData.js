@@ -9,7 +9,7 @@ const addStudentsReqData = async (req, res, next) => {
     if (!body)
       return res.status(401).json({
         ok: false,
-        message: "invalid requst body one or more fileds are missing",
+        message: "invalid requst body required post body but got known",
       });
     if (
       !body.firstName.trim() === "" ||
@@ -19,12 +19,10 @@ const addStudentsReqData = async (req, res, next) => {
       !body.dateOfBirth.trim() === "" ||
       !body.gender.trim() === "" ||
       !body.house.trim() === "" ||
-      !body.dayStudent ||
-      !body.bordingStudent ||
       !body.trackingID.trim() === "" ||
-      !body.studentYear.trim() === ""
+      !body.year.trim() === ""
     )
-      return res.status(401).json({
+      return res.status(403).json({
         ok: false,
         message: "invalid requst body one or more fileds are missing",
       });
@@ -62,7 +60,7 @@ StudentsDataRouter.post(
         bordingStudent: body.bordingStudent,
         image: body.image,
         trackingID: body.trackingID,
-        studentYear: body.studentYear,
+        studentYear: body.year,
         createdAt: new Date().toISOString(),
       };
       const addStudent = await studentsData.insertOne(userData);
@@ -90,6 +88,24 @@ StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
       message: "succesful",
       ID: ID,
     });
+  } catch (error) {
+    res.status(500).json({ ok: false, message: `server error: ${error}` });
+    console.log(`server error: ${error}`);
+  }
+});
+StudentsDataRouter.get("/all/students/records", async (req, res) => {
+  try {
+    const findStudents = await studentsData
+      .find()
+      .lean()
+      .sort({ createdAt: 1 });
+    if (findStudents.length === 0)
+      return res
+        .status(404)
+        .json({ ok: true, message: "no records found", records: findStudents });
+    res
+      .status(202)
+      .json({ ok: true, message: "succesfull ", records: findStudents });
   } catch (error) {
     res.status(500).json({ ok: false, message: `server error: ${error}` });
     console.log(`server error: ${error}`);

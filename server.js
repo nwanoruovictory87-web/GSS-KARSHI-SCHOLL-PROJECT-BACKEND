@@ -9,6 +9,7 @@ app.use(
     credentials: true,
   }),
 );
+app.use(express.json());
 const mongoose = require("mongoose");
 const server = http.createServer(app);
 //
