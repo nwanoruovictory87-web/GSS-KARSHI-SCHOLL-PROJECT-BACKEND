@@ -36,18 +36,25 @@ mongoose
     console.log(`database error :${er}`);
   });
 */
-const database = new Set();
+//database
+const studentDataDatabase = new Set();
+const trackingLocationDatabase = new Map();
 //
 function getStorage() {
-  return database;
+  return studentDataDatabase;
+}
+function getTrackingStorage() {
+  return trackingLocationDatabase;
 }
 server.listen(port, () => {
   console.log(`server runing on port ${port}`);
 });
-module.exports = { getStorage };
+module.exports = { getStorage, getTrackingStorage };
 //import routes
 const studentsData = require("./src/controllers/studentsData");
+const trackingFlow = require("./src/controllers/tracking");
 
 //use routes
 app.use("/students", studentsData);
+app.use("/tracking", trackingFlow);
 //

@@ -2,8 +2,9 @@ const express = require("express");
 const StudentsDataRouter = express.Router();
 //const studentsData = require("../modules/studentsDataSchema");
 const { randomUUID } = require("crypto");
-const { getStorage } = require("../../server");
+const { getStorage, getTrackingStorage } = require("../../server");
 const db = getStorage();
+const tdb = getTrackingStorage();
 //middle ware
 const addStudentsReqData = async (req, res, next) => {
   try {
@@ -66,7 +67,28 @@ StudentsDataRouter.post(
         createdAt: new Date().toISOString(),
       };
       db.add(JSON.stringify(userData));
-      if (!db)
+      const trackingData = {
+        trackingID: body.trackingID,
+        latitude: 0,
+        longitude: 0,
+        accuracy: 0,
+        watchInfo: {
+          batteryPercent: "",
+          watchTime: "",
+        },
+        locationInfo: {
+          locationAccuracy: 0,
+          lastTransmistedDate: "",
+          lastThreeKnownLocation: [
+            {
+              latitude: 0,
+              longitude: 0,
+            },
+          ],
+        },
+      };
+      tdb.set(body.trackingID, trackingData);
+      if (!db || !tdb)
         return res.status(500).json({
           ok: false,
           message: `somting went wrong while creating student records error: ${addStudent}`,
@@ -129,6 +151,7 @@ StudentsDataRouter.put("/delete/student/id/:id", async (req, res) => {
       const data = JSON.parse(value);
       if (data.trackingID === trackingID) return (studentData = value);
     });
+    tdb.delete(trackingID);
     if (!studentData)
       return res.status(404).json({
         ok: false,
