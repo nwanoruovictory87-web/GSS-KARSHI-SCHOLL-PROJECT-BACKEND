@@ -65,7 +65,7 @@ StudentsDataRouter.post(
         studentYear: body.year,
         createdAt: new Date().toISOString(),
       };
-      db.add(userData);
+      db.add(JSON.stringify(userData));
       if (!db)
         return res.status(500).json({
           ok: false,
@@ -98,7 +98,7 @@ StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
 StudentsDataRouter.get("/all/students/records", async (req, res) => {
   try {
     const findStudents = [];
-    db.forEach((value) => findStudents.push(value));
+    db.forEach((value) => findStudents.push(JSON.parse(value)));
     if (findStudents.length === 0)
       return res.status(404).json({
         ok: true,
@@ -110,6 +110,32 @@ StudentsDataRouter.get("/all/students/records", async (req, res) => {
       message: "succesfull ",
       records: findStudents,
     });
+  } catch (error) {
+    res.status(500).json({ ok: false, message: `server error: ${error}` });
+    console.log(`server error: ${error}`);
+  }
+});
+//delete student
+StudentsDataRouter.put("/delete/student/id/:id", async (req, res) => {
+  try {
+    const trackingID = req.params.id;
+    if (!trackingID)
+      return res.status(403).json({
+        ok: false,
+        message: "invalid requst params no student tracking ID",
+      });
+    let studentData = null;
+    db.forEach((value) => {
+      const data = JSON.parse(value);
+      if (data.trackingID === trackingID) return (studentData = value);
+    });
+    if (!studentData)
+      return res.status(404).json({
+        ok: false,
+        message: "no student data with the giving ID found",
+      });
+    db.delete(studentData);
+    res.status(200).json({ ok: true, message: "succesful" });
   } catch (error) {
     res.status(500).json({ ok: false, message: `server error: ${error}` });
     console.log(`server error: ${error}`);
