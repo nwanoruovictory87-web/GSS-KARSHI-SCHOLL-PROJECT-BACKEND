@@ -37,13 +37,17 @@ mongoose
   });
 */
 const database = new Set();
+//
+function getStorage() {
+  return database;
+}
 server.listen(port, () => {
   console.log(`server runing on port ${port}`);
 });
+module.exports = { getStorage };
 //import routes
 const studentsData = require("./src/controllers/studentsData");
 
 //use routes
 app.use("/students", studentsData);
 //
-module.exports = { database };

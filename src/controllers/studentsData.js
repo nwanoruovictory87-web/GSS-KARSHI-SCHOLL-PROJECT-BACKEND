@@ -1,7 +1,9 @@
 const express = require("express");
 const StudentsDataRouter = express.Router();
-const studentsData = require("../modules/studentsDataSchema");
+//const studentsData = require("../modules/studentsDataSchema");
 const { randomUUID } = require("crypto");
+const { getStorage } = require("../../server");
+const db = getStorage();
 //middle ware
 const addStudentsReqData = async (req, res, next) => {
   try {
@@ -63,8 +65,8 @@ StudentsDataRouter.post(
         studentYear: body.year,
         createdAt: new Date().toISOString(),
       };
-      const addStudent = await studentsData.insertOne(userData);
-      if (!addStudent)
+      db.add(userData);
+      if (!db)
         return res.status(500).json({
           ok: false,
           message: `somting went wrong while creating student records error: ${addStudent}`,
@@ -95,17 +97,19 @@ StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
 });
 StudentsDataRouter.get("/all/students/records", async (req, res) => {
   try {
-    const findStudents = await studentsData
-      .find()
-      .lean()
-      .sort({ createdAt: 1 });
+    const findStudents = [];
+    db.forEach((value) => findStudents.push(value));
     if (findStudents.length === 0)
-      return res
-        .status(404)
-        .json({ ok: true, message: "no records found", records: findStudents });
-    res
-      .status(202)
-      .json({ ok: true, message: "succesfull ", records: findStudents });
+      return res.status(404).json({
+        ok: true,
+        message: "no records found",
+        records: findStudents,
+      });
+    res.status(202).json({
+      ok: true,
+      message: "succesfull ",
+      records: findStudents,
+    });
   } catch (error) {
     res.status(500).json({ ok: false, message: `server error: ${error}` });
     console.log(`server error: ${error}`);
