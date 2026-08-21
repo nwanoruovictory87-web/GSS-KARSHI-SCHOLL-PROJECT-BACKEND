@@ -72,13 +72,14 @@ StudentsDataRouter.post(
         latitude: 0,
         longitude: 0,
         accuracy: 0,
+        trackingState: 0, // 0 unkown // 1 stable // 2 warning // 3 panic
         watchInfo: {
           batteryPercent: "0",
-          watchTime: "0.00",
+          watchTime: "0:00AM",
         },
         locationInfo: {
           locationAccuracy: 0,
-          lastTransmistedDate: "",
+          lastTransmistedDate: "00/00/0000",
           lastThreeKnownLocation: [
             {
               latitude: 0,

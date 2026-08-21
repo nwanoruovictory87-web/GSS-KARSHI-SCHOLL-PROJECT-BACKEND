@@ -17,6 +17,11 @@ const trackingSchema = new Schema({
     type: Number,
     required: true,
   },
+  trackingState: {
+    // 0 unkown // 1 stable // 2 warning // 3 panic
+    type: Number,
+    required: true,
+  },
   watchInfo: {
     batteryPercent: {
       type: String,
