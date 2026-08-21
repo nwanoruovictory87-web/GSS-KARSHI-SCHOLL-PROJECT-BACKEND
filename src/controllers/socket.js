@@ -26,6 +26,7 @@ function Socket(serverConnection) {
     });
     //listen on admin requst for alert state
     socket.on("get-students-alert", () => {
+      console.log("alert ping recived");
       const studentsData = [];
       //
       sdb.forEach((value) => {
