@@ -24,6 +24,24 @@ function Socket(serverConnection) {
       socket.emit("all-students-location", gpsLocationList);
       //
     });
+    //listen on admin requst for alert state
+    socket.on("get-students-alert", () => {
+      const studentsData = [];
+      //
+      sdb.forEach((value) => {
+        const data = JSON.parse(value);
+        if (tdb.has(data.trackingID)) {
+          const trackingData = tdb.get(data.trackingID);
+          const studentTrackingData = {
+            ...data,
+            ...trackingData,
+          };
+          studentsData.push(studentTrackingData);
+        }
+      });
+      //
+      socket.emit("all-students-alert", studentsData);
+    });
     //
   });
 }

@@ -45,6 +45,7 @@ const addStudentsReqData = async (req, res, next) => {
     console.log(`server error: ${error}`);
   }
 };
+// add new students to list
 StudentsDataRouter.post(
   "/add/new/students",
   addStudentsReqData,
@@ -104,7 +105,7 @@ StudentsDataRouter.post(
     }
   },
 );
-//
+//get new tracking ID
 StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
   try {
     const ID = randomUUID();
@@ -118,6 +119,7 @@ StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
     console.log(`server error: ${error}`);
   }
 });
+//get all students record
 StudentsDataRouter.get("/all/students/records", async (req, res) => {
   try {
     const findStudents = [];
