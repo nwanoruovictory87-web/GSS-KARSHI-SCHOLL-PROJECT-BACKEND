@@ -12,6 +12,18 @@ app.use(
 app.use(express.json());
 const server = http.createServer(app);
 //
+//database
+const studentDataDatabase = new Set();
+const trackingLocationDatabase = new Map();
+//
+function getStorage() {
+  return studentDataDatabase;
+}
+function getTrackingStorage() {
+  return trackingLocationDatabase;
+}
+module.exports = { getStorage, getTrackingStorage };
+//
 const { Socket } = require("./src/controllers/socket");
 //create socket instance with server
 Socket(server);
@@ -36,20 +48,11 @@ mongoose
     console.log(`database error :${er}`);
   });
 */
-//database
-const studentDataDatabase = new Set();
-const trackingLocationDatabase = new Map();
-//
-function getStorage() {
-  return studentDataDatabase;
-}
-function getTrackingStorage() {
-  return trackingLocationDatabase;
-}
+
 server.listen(port, () => {
   console.log(`server runing on port ${port}`);
 });
-module.exports = { getStorage, getTrackingStorage };
+
 //import routes
 const studentsData = require("./src/controllers/studentsData");
 const trackingFlow = require("./src/controllers/tracking");

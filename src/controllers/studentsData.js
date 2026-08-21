@@ -73,8 +73,8 @@ StudentsDataRouter.post(
         longitude: 0,
         accuracy: 0,
         watchInfo: {
-          batteryPercent: "",
-          watchTime: "",
+          batteryPercent: "0",
+          watchTime: "0.00",
         },
         locationInfo: {
           locationAccuracy: 0,

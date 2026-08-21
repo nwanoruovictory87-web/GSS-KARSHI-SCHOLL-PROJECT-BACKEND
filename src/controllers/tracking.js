@@ -3,6 +3,7 @@ const TrackingData = express.Router();
 const { getStorage, getTrackingStorage } = require("../../server");
 const sdb = getStorage();
 const tdb = getTrackingStorage();
+//
 TrackingData.get("/student/tracking/data/:id", async (req, res) => {
   try {
     const trackingID = req.params.id;
@@ -40,4 +41,5 @@ TrackingData.get("/student/tracking/data/:id", async (req, res) => {
   }
 });
 //
+
 module.exports = TrackingData;
