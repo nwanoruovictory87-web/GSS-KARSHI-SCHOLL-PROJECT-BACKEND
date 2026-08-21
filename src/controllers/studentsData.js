@@ -9,6 +9,7 @@ const tdb = getTrackingStorage();
 const addStudentsReqData = async (req, res, next) => {
   try {
     const body = req.body;
+    console.log(body);
     if (!body)
       return res.status(401).json({
         ok: false,
@@ -16,7 +17,6 @@ const addStudentsReqData = async (req, res, next) => {
       });
     if (
       !body.firstName.trim() === "" ||
-      !body.middleName ||
       !body.lastName.trim() === "" ||
       !body.age.trim() === "" ||
       !body.dateOfBirth.trim() === "" ||
@@ -76,7 +76,7 @@ StudentsDataRouter.post(
         trackingState: 0, // 0 unkown // 1 stable // 2 warning // 3 panic
         watchInfo: {
           batteryPercent: "0",
-          watchTime: "0:00AM",
+          watchTime: "0:00",
         },
         locationInfo: {
           locationAccuracy: 0,
