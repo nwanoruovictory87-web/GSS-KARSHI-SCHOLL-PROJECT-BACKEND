@@ -58,6 +58,20 @@ function Socket(serverConnection) {
         tdb.set(trackingID, locationData);
       }
     });
+    //listen on client panic event
+    socket.on("get-panic-call", (locationData, trackingID) => {
+      if (tdb.has(trackingID)) {
+        tdb.set(trackingID, locationData);
+      }
+    });
+    //listen on client requst for watch state
+    socket.on("get-watch-state", (trackingID) => {
+      if (tdb.has(trackingID)) {
+        const data = tdb.get(trackingID);
+        const state = data.trackingState;
+        socket.emit("send-watch-state", state);
+      }
+    });
   });
 }
 module.exports = { Socket };
