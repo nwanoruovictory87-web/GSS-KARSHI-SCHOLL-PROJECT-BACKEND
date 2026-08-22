@@ -167,4 +167,37 @@ StudentsDataRouter.put("/delete/student/id/:id", async (req, res) => {
     console.log(`server error: ${error}`);
   }
 });
+//validate students trackingID
+StudentsDataRouter.get("/validate/id/:id", async (req, res) => {
+  try {
+    const trackingID = req.params.id;
+    if (!trackingID || trackingID.trim() === "")
+      return res.status(401).json({
+        ok: false,
+        message: "invaild or no trackingID",
+        isInRecords: false,
+      });
+    let isInRecords = false;
+    db.forEach((value) => {
+      const data = JSON.parse(value);
+      if (data.trackingID === trackingID) {
+        isInRecords = true;
+      }
+    });
+    if (!isInRecords)
+      return res.status(404).json({
+        ok: false,
+        message: "no records with the given trackingID found",
+        isInRecords: isInRecords,
+      });
+    res.status(200).json({
+      ok: true,
+      message: "succesful",
+      isInRecords: isInRecords,
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, message: `server error: ${error}` });
+    console.log(`server error: ${error}`);
+  }
+});
 module.exports = StudentsDataRouter;

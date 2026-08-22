@@ -5,8 +5,12 @@ const cors = require("cors");
 const app = express();
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL_DEV, process.env.FRONTEND_URL],
-    credentials: true,
+    origin: [
+      process.env.FRONTEND_URL_DEV,
+      process.env.FRONTEND_URL,
+      process.env.CLIENT_URL_DEV,
+      process.env.CLIENT_URL,
+    ],
   }),
 );
 app.use(express.json());
