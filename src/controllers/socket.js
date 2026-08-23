@@ -1,7 +1,10 @@
 const { Server } = require("socket.io");
 const { getStorage, getTrackingStorage } = require("../../server");
+//database
 const sdb = getStorage();
 const tdb = getTrackingStorage();
+const activeStudents = new Set();
+//
 function Socket(serverConnection) {
   const io = new Server(serverConnection, {
     cors: {
@@ -61,6 +64,7 @@ function Socket(serverConnection) {
     //listen on client panic event
     socket.on("get-panic-call", (locationData, trackingID) => {
       if (tdb.has(trackingID)) {
+        console.log(locationData);
         tdb.set(trackingID, locationData);
       }
     });
@@ -72,6 +76,89 @@ function Socket(serverConnection) {
         socket.emit("send-watch-state", state);
       }
     });
+    //listen on overview ping requst get all needed data
+    socket.on("get-overview-data", () => {
+      //studentsHiglightsData
+      const totalStudnets = sdb.size;
+      let resumedStudents = 0;
+      tdb.forEach((value) => {
+        if (value.trackingState != 0) {
+          resumedStudents++;
+        }
+      });
+      const activeStudentsCount = activeStudents.size;
+      const inActiveStudentsCount = resumedStudents - activeStudentsCount;
+      //alertsCountData
+      let panicCount = 0;
+      let warningCount = 0;
+      let stableCount = 0;
+      //importantAlertsData
+      const importantAlertsData = [];
+      //
+      tdb.forEach((value) => {
+        if (value.trackingState === 1) {
+          stableCount++;
+        } else if (value.trackingState === 2) {
+          warningCount++;
+        } else if (value.trackingState === 3) {
+          panicCount++;
+        }
+        //importantAlert
+        if (value.trackingState === 2 || value.trackingState === 3) {
+          const alertsData = {
+            trackingID: value.trackingID,
+            watchTime: value.watchInfo,
+            trackingState: value.trackingState,
+          };
+          importantAlertsData.push(alertsData);
+        }
+      });
+      //responds data
+      const responds = {
+        alertsCountData: {
+          panicCount: panicCount,
+          warningCount: warningCount,
+          stableCount: stableCount,
+        },
+        importantAlertsData: importantAlertsData,
+        studentsDailyGraphData: {
+          total: totalStudnets,
+          resumed: resumedStudents,
+          active: activeStudentsCount,
+          inActive: inActiveStudentsCount,
+        },
+        studentsHiglightsData: {
+          total: totalStudnets,
+          resumed: resumedStudents,
+          active: activeStudentsCount,
+          inActive: inActiveStudentsCount,
+        },
+      };
+      //
+      socket.emit("send-overview-data", responds);
+      //
+    });
+    // overview data logic
+    // listen on am active client responds to are you active ping
+    let currentActiveStudents = [];
+    socket.on("am-active-client", (trackingID) => {
+      if (!currentActiveStudents.includes(trackingID)) {
+        currentActiveStudents.push(trackingID);
+      }
+    });
+    // send ping to client are you active every 1min (60) secs
+    setInterval(() => {
+      socket.emit("are-you-active-client");
+      //validate whos active after 30s
+      setTimeout(() => {
+        activeStudents.clear(); // clear prevous list of active students
+        currentActiveStudents.forEach((value) => {
+          activeStudents.add(value); // set list with now active students
+        });
+        currentActiveStudents = []; // clear temb active students storage for new active list
+      }, 30000); // 30s after parent function is called
+    }, 60000); // every 60s
+    //
   });
 }
 module.exports = { Socket };

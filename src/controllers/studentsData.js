@@ -9,7 +9,6 @@ const tdb = getTrackingStorage();
 const addStudentsReqData = async (req, res, next) => {
   try {
     const body = req.body;
-    console.log(body);
     if (!body)
       return res.status(401).json({
         ok: false,
