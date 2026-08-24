@@ -158,7 +158,12 @@ function Socket(serverConnection) {
         currentActiveStudents = []; // clear temb active students storage for new active list
       }, 30000); // 30s after parent function is called
     }, 60000); // every 60s
-    //
+    //dev send saved tracking id
+    socket.on("get-tracking-id-admin", (trackingId) => {
+      //
+      //console.log("recived id", trackingId);
+      socket.broadcast.emit("get-tracking-id-client", trackingId);
+    });
   });
 }
 module.exports = { Socket };
