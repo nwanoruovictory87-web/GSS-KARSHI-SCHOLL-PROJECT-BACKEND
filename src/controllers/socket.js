@@ -16,17 +16,14 @@ function Socket(serverConnection) {
       ],
     },
   });
-  let socketRef = null;
   let currentActiveStudents = [];
   //emit event to client get location
   setInterval(() => {
-    if (!socketRef) return;
-    socketRef.broadcast.emit("send-live-location");
+    io.emit("send-live-location");
   }, 20000); // requst students live location every 20 sec
   // send ping to client are you active every 1min (60) secs
   setInterval(() => {
-    if (!socketRef) return;
-    socketRef.broadcast.emit("are-you-active-client");
+    io.emit("are-you-active-client");
     //validate whos active after 30s
     setTimeout(() => {
       activeStudents.clear(); // clear prevous list of active students
@@ -37,9 +34,40 @@ function Socket(serverConnection) {
     }, 30000); // 30s after parent function is called
   }, 60000); // every 60s
   //
+  let respondedClientsId = [];
+  setInterval(() => {
+    io.emit("are-you-there-client");
+    //clean up
+    setTimeout(() => {
+      sdb.forEach((value) => {
+        const data = JSON.parse(value);
+        const trackingID = data.trackingID;
+        if (
+          activeStudents.has(trackingID) &&
+          !respondedClientsId.includes(!trackingID)
+        ) {
+          if (tdb.has(trackingID)) {
+            const sTdb = tdb.get(trackingID);
+            if (sTdb.trackingState != 0) {
+              tdb.set(trackingID, { ...sTdb, trackingState: 2 }); // set to panic
+            }
+          }
+        } else if (
+          activeStudents.has(trackingID) &&
+          respondedClientsId.includes(trackingID)
+        ) {
+          const sTdb = tdb.get(trackingID);
+          if (sTdb.trackingState != 0) {
+            tdb.set(trackingID, { ...sTdb, trackingState: 1 }); // set to panic
+          }
+        }
+      });
+      respondedClientsId = [];
+    }, 15000);
+  }, 25000); // every 25 sec
+  //
   io.on("connection", (socket) => {
     console.log(socket.id);
-    socketRef = socket;
     //
     //listen on admin requst for new location
     socket.on("get-students-location", () => {
@@ -107,7 +135,8 @@ function Socket(serverConnection) {
         }
       });
       const activeStudentsCount = activeStudents.size;
-      const inActiveStudentsCount = resumedStudents - activeStudentsCount;
+      const inActiveStudentsCount =
+        resumedStudents > 0 ? resumedStudents - activeStudentsCount : 0;
       //alertsCountData
       let panicCount = 0;
       let warningCount = 0;
@@ -127,7 +156,7 @@ function Socket(serverConnection) {
         if (value.trackingState === 2 || value.trackingState === 3) {
           const alertsData = {
             trackingID: value.trackingID,
-            watchTime: value.watchInfo,
+            watchTime: value.watchInfo.watchTime,
             trackingState: value.trackingState,
           };
           importantAlertsData.push(alertsData);
@@ -166,7 +195,9 @@ function Socket(serverConnection) {
         currentActiveStudents.push(trackingID);
       }
     });
-
+    socket.on("am-here", (trackingID) => {
+      respondedClientsId.push(trackingID);
+    });
     //dev send saved tracking id
     socket.on("get-tracking-id-admin", (trackingId) => {
       //
