@@ -16,8 +16,31 @@ function Socket(serverConnection) {
       ],
     },
   });
+  let socketRef = null;
+  let currentActiveStudents = [];
+  //emit event to client get location
+  setInterval(() => {
+    if (!socketRef) return;
+    socketRef.broadcast.emit("send-live-location");
+  }, 20000); // requst students live location every 20 sec
+  // send ping to client are you active every 1min (60) secs
+  setInterval(() => {
+    if (!socketRef) return;
+    socketRef.broadcast.emit("are-you-active-client");
+    //validate whos active after 30s
+    setTimeout(() => {
+      activeStudents.clear(); // clear prevous list of active students
+      currentActiveStudents.forEach((value) => {
+        activeStudents.add(value); // set list with now active students
+      });
+      currentActiveStudents = []; // clear temb active students storage for new active list
+    }, 30000); // 30s after parent function is called
+  }, 60000); // every 60s
+  //
   io.on("connection", (socket) => {
     console.log(socket.id);
+    socketRef = socket;
+    //
     //listen on admin requst for new location
     socket.on("get-students-location", () => {
       const gpsLocationList = [];
@@ -51,10 +74,7 @@ function Socket(serverConnection) {
       //
       socket.emit("all-students-alert", studentsData);
     });
-    //emit event to client get location
-    setTimeout(() => {
-      socket.emit("send-live-location");
-    }, 10000); // requst students live location every 10 sec
+
     //listen event client
     socket.on("get-live-location", (locationData, trackingID) => {
       if (tdb.has(trackingID)) {
@@ -140,24 +160,13 @@ function Socket(serverConnection) {
     });
     // overview data logic
     // listen on am active client responds to are you active ping
-    let currentActiveStudents = [];
+
     socket.on("am-active-client", (trackingID) => {
       if (!currentActiveStudents.includes(trackingID)) {
         currentActiveStudents.push(trackingID);
       }
     });
-    // send ping to client are you active every 1min (60) secs
-    setInterval(() => {
-      socket.emit("are-you-active-client");
-      //validate whos active after 30s
-      setTimeout(() => {
-        activeStudents.clear(); // clear prevous list of active students
-        currentActiveStudents.forEach((value) => {
-          activeStudents.add(value); // set list with now active students
-        });
-        currentActiveStudents = []; // clear temb active students storage for new active list
-      }, 30000); // 30s after parent function is called
-    }, 60000); // every 60s
+
     //dev send saved tracking id
     socket.on("get-tracking-id-admin", (trackingId) => {
       //
