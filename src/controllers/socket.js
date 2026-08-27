@@ -44,7 +44,7 @@ function Socket(serverConnection) {
         const trackingID = data.trackingID;
         if (
           activeStudents.has(trackingID) &&
-          !respondedClientsId.includes(!trackingID)
+          !respondedClientsId.includes(trackingID)
         ) {
           if (tdb.has(trackingID)) {
             const sTdb = tdb.get(trackingID);
@@ -196,7 +196,9 @@ function Socket(serverConnection) {
       }
     });
     socket.on("am-here", (trackingID) => {
-      respondedClientsId.push(trackingID);
+      if (!respondedClientsId.includes(trackingID)) {
+        respondedClientsId.push(trackingID);
+      }
     });
     //dev send saved tracking id
     socket.on("get-tracking-id-admin", (trackingId) => {
