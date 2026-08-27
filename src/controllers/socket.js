@@ -64,7 +64,7 @@ function Socket(serverConnection) {
       });
       respondedClientsId = [];
     }, 15000);
-  }, 25000); // every 25 sec
+  }, 60000); // every 60 sec
   //
   io.on("connection", (socket) => {
     console.log(socket.id);
