@@ -61,6 +61,9 @@ const addStudentsReqData = async (req, res, next) => {
   }
 };
 // add new students to list
+//test
+let count = 0;
+//test
 StudentsDataRouter.post(
   "/add/new/students",
   upload.single("image"),
@@ -89,19 +92,57 @@ StudentsDataRouter.post(
         createdAt: new Date().toISOString(),
       };
       db.add(JSON.stringify(userData));
+      //test
+      const location = [
+        {
+          location: "GSS Karshi (Stable Site Center)",
+          status: "stable",
+          latitude: 8.82772,
+          longitude: 7.55015,
+        },
+        {
+          location: "GSS Karshi (Warning Perimeter)",
+          status: "warning",
+          latitude: 8.82795,
+          longitude: 7.55015,
+        },
+        {
+          location: "GSS Karshi (Secondary Point)",
+          status: "stable",
+          latitude: 8.8275,
+          longitude: 7.55032,
+        },
+        {
+          location: "Orozo Panic Zone",
+          status: "panic",
+          latitude: 8.9001,
+          longitude: 7.5728,
+        },
+      ];
+      const state = [1, 2, 1, 3];
+
+      let latitude = 0;
+      let longitude = 0;
+      let trackingState = 0;
+      if (count < 4) {
+        latitude = location[count].latitude;
+        longitude = location[count].longitude;
+        trackingState = state[count];
+      }
+      //test
       const trackingData = {
         trackingID: body.trackingID,
-        latitude: 0,
-        longitude: 0,
+        latitude: latitude,
+        longitude: longitude,
         accuracy: 0,
-        trackingState: 0, // 0 unkown // 1 stable // 2 warning // 3 panic
+        trackingState: trackingState, // 0 unkown // 1 stable // 2 warning // 3 panic
         watchInfo: {
-          batteryPercent: "0",
-          watchTime: "0:00",
+          batteryPercent: count < 4 ? "20" : "0",
+          watchTime: count < 4 ? "2:10" : "0.00",
         },
         locationInfo: {
           locationAccuracy: 0,
-          lastTransmistedDate: "00/00/0000",
+          lastTransmistedDate: count < 4 ? "08/28/2026" : "00/00/0000",
           lastThreeKnownLocation: [
             {
               latitude: 0,
@@ -116,6 +157,7 @@ StudentsDataRouter.post(
           ok: false,
           message: `somting went wrong while creating student records error: ${addStudent}`,
         });
+      count++;
       return res.status(201).json({
         ok: true,
         message: `succesfuly created students data`,
