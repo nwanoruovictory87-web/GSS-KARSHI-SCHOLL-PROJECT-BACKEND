@@ -97,26 +97,26 @@ StudentsDataRouter.post(
         {
           location: "GSS Karshi (Stable Site Center)",
           status: "stable",
-          latitude: 8.82772,
-          longitude: 7.55015,
+          latitude: 8.815913,
+          longitude: 7.556261,
         },
         {
           location: "GSS Karshi (Warning Perimeter)",
           status: "warning",
-          latitude: 8.82795,
-          longitude: 7.55015,
+          latitude: 8.815561,
+          longitude: 7.555442,
         },
         {
           location: "GSS Karshi (Secondary Point)",
           status: "stable",
-          latitude: 8.8275,
-          longitude: 7.55032,
+          latitude: 8.815606,
+          longitude: 7.557703,
         },
         {
           location: "Orozo Panic Zone",
           status: "panic",
-          latitude: 8.9001,
-          longitude: 7.5728,
+          latitude: 8.82404,
+          longitude: 7.569158,
         },
       ];
       const state = [1, 2, 1, 3];
@@ -139,6 +139,7 @@ StudentsDataRouter.post(
         watchInfo: {
           batteryPercent: count < 4 ? "20" : "0",
           watchTime: count < 4 ? "2:10" : "0.00",
+          watchDate: count < 4 ? "08/28/2026" : "00/00/0000",
         },
         locationInfo: {
           locationAccuracy: 0,
