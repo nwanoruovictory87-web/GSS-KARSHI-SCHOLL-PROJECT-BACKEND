@@ -5,6 +5,22 @@ const { randomUUID } = require("crypto");
 const { getStorage, getTrackingStorage } = require("../../server");
 const db = getStorage();
 const tdb = getTrackingStorage();
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./storage");
+  },
+  filename: (req, file, cb) => {
+    const date = new Date();
+    cb(
+      null,
+      `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getMilliseconds()}` +
+        "-" +
+        file.originalname,
+    );
+  },
+});
+const upload = multer({ storage });
 //middle ware
 const addStudentsReqData = async (req, res, next) => {
   try {
@@ -47,10 +63,15 @@ const addStudentsReqData = async (req, res, next) => {
 // add new students to list
 StudentsDataRouter.post(
   "/add/new/students",
-  addStudentsReqData,
+  upload.single("image"),
   async (req, res) => {
     try {
-      const body = req.body;
+      let imageURL = null;
+      if (req.file) {
+        const filename = req.file.filename;
+        const url = `http://${req.headers.host}/${filename}`;
+        imageURL = url;
+      }
       const userData = {
         firstName: body.firstName,
         middleName: body.middleName,
@@ -61,7 +82,7 @@ StudentsDataRouter.post(
         house: body.house,
         dayStudent: body.dayStudent,
         bordingStudent: body.bordingStudent,
-        image: body.image,
+        image: imageURL,
         trackingID: body.trackingID,
         studentYear: body.year,
         createdAt: new Date().toISOString(),

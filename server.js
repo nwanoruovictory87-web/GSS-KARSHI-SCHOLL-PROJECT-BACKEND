@@ -2,6 +2,7 @@ const http = require("http");
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const path = require("path");
 const app = express();
 app.use(
   cors({
@@ -14,7 +15,10 @@ app.use(
   }),
 );
 app.use(express.json());
+
 const server = http.createServer(app);
+app.use(express.static(path.join(__dirname, "storage")));
+
 //
 //database
 const studentDataDatabase = new Set();
