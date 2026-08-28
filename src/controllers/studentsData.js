@@ -72,6 +72,7 @@ StudentsDataRouter.post(
         const url = `http://${req.headers.host}/${filename}`;
         imageURL = url;
       }
+      const body = JSON.parse(req.body["students-info"]);
       const userData = {
         firstName: body.firstName,
         middleName: body.middleName,
