@@ -106,7 +106,14 @@ function Socket(serverConnection) {
     //listen event client
     socket.on("get-live-location", (locationData, trackingID) => {
       if (tdb.has(trackingID)) {
-        tdb.set(trackingID, locationData);
+        const data = tdb.get(trackingID, locationData);
+        let trackingState = 1;
+        if (data.trackingState === 3) {
+          trackingState = 3;
+        } else if (data.trackingState === 2) {
+          trackingState = 2;
+        }
+        tdb.set(trackingID, { ...locationData, trackingState: trackingState });
       }
     });
     //listen on client panic event
