@@ -112,6 +112,8 @@ function Socket(serverConnection) {
           trackingState = 3;
         } else if (data.trackingState === 2) {
           trackingState = 2;
+        } else {
+          trackingState = locationData.trackingState;
         }
         tdb.set(trackingID, { ...locationData, trackingState: trackingState });
       }
