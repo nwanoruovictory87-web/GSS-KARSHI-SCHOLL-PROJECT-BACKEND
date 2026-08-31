@@ -4,6 +4,8 @@ const { getStorage, getTrackingStorage } = require("../../server");
 const sdb = getStorage();
 const tdb = getTrackingStorage();
 //
+const { GoogleGenAI } = require("@google/genai");
+//
 TrackingData.get("/student/tracking/data/:id", async (req, res) => {
   try {
     const trackingID = req.params.id;
@@ -41,5 +43,51 @@ TrackingData.get("/student/tracking/data/:id", async (req, res) => {
   }
 });
 //
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+//
+TrackingData.post("/student/tracking/aioverview", async (req, res) => {
+  // Extracting all the variables your watch tracker sends over
+  const {
+    fullName,
+    age,
+    gender,
+    schoolHouse,
+    watchBattery, // mapping watch time 44% to battery
+    lat,
+    lng,
+    watchDate,
+    watchTime,
+    currentDate,
+  } = req.body;
+  try {
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-3.6-flash",
+      // We pass the strict rules via system instructions
+      config: {
+        systemInstruction: `You are a school tracking data formatter. Take the provided student watch parameters and turn them into a single, clean narrative summary. Map latitude around 8 and longitude around 7 directly to "GSS Karshi". Format dates as text. Match this layout exactly: "[Name], a [Age] year old [Gender] student in [House] house was last seen in [Location] at [Time] on [Date]. The tracking device's last known battery percent is [Battery] percent. This is all that was gotten from [Date] to [CurrentDate]."`,
+      },
+      contents: `
+        Format this raw data:
+        - studentName: ${fullName}
+        - studentAge: ${age}
+        - studentGender: ${gender}
+        - studentHouse: ${schoolHouse}
+        - watchTime/battery: ${watchBattery}
+        - studentLocation: lat ${lat}, lng ${lng}
+        - dataLocationReceivedDate: ${watchDate}
+        - timeLocationReceived: ${watchTime}
+        - currentSystemDate: ${currentDate}
+      `,
+    });
+
+    res.json({ ok: true, message: "succesful", text: aiResponse.text.trim() });
+  } catch (error) {
+    console.error("Gemini Insight Error:", error);
+    res.status(500).json({
+      ok: false,
+      message: "Failed to generate quick insight overview",
+    });
+  }
+});
 
 module.exports = TrackingData;
