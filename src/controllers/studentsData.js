@@ -162,7 +162,6 @@ StudentsDataRouter.post(
           ok: false,
           message: `somting went wrong while creating student records error: ${addStudent}`,
         });
-      count++;
       return res.status(201).json({
         ok: true,
         message: `succesfuly created students data`,
