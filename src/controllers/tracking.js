@@ -63,7 +63,7 @@ TrackingData.post("/student/tracking/aioverview", async (req, res) => {
       model: "gemini-3.6-flash",
       // We pass the strict rules via system instructions
       config: {
-        systemInstruction: `You are a school tracking data formatter. Take the provided student watch parameters and turn them into a single, clean narrative summary. Map latitude around 8 and longitude around 7 directly to "GSS Karshi". Format dates as text. Match this layout exactly: "[Name], a [Age] year old [Gender] student in [House] house was last seen in [Location] at [Time] on [Date]. The tracking device's last known battery percent is [Battery] percent. This is all that was gotten from [Date] to [CurrentDate]."`,
+        systemInstruction: `You are a school tracking data formatter. Take the provided student watch parameters and turn them into a single, clean narrative summary. Map latitude and longitude directly to it's corresponding location address name. Format dates as text. Match this layout exactly: "[Name], a [Age] year old [Gender] student in [House] house was last seen in [Location] at [Time] on [Date]. The tracking device's last known battery percent is [Battery] percent. This is all that was gotten from [Date] to [CurrentDate]."`,
       },
       contents: `
         Format this raw data:
