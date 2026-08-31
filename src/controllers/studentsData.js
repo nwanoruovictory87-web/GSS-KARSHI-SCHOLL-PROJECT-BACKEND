@@ -136,8 +136,8 @@ StudentsDataRouter.post(
       */
       const trackingData = {
         trackingID: body.trackingID,
-        latitude: latitude,
-        longitude: longitude,
+        latitude: 0,
+        longitude: 0,
         accuracy: 0,
         trackingState: 0, // 0 unkown // 1 stable // 2 warning // 3 panic
         watchInfo: {
