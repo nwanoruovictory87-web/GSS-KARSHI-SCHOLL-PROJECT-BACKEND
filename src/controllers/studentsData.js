@@ -61,9 +61,11 @@ const addStudentsReqData = async (req, res, next) => {
   }
 };
 // add new students to list
+/*
 //test
 let count = 0;
 //test
+*/
 StudentsDataRouter.post(
   "/add/new/students",
   upload.single("image"),
@@ -92,6 +94,7 @@ StudentsDataRouter.post(
         createdAt: new Date().toISOString(),
       };
       db.add(JSON.stringify(userData));
+      /*
       //test
       const location = [
         {
@@ -130,20 +133,21 @@ StudentsDataRouter.post(
         trackingState = state[count];
       }
       //test
+      */
       const trackingData = {
         trackingID: body.trackingID,
         latitude: latitude,
         longitude: longitude,
         accuracy: 0,
-        trackingState: trackingState, // 0 unkown // 1 stable // 2 warning // 3 panic
+        trackingState: 0, // 0 unkown // 1 stable // 2 warning // 3 panic
         watchInfo: {
-          batteryPercent: count < 4 ? "20" : "0",
-          watchTime: count < 4 ? "2:10" : "0.00",
-          watchDate: count < 4 ? "08/28/2026" : "00/00/0000",
+          batteryPercent: "0",
+          watchTime: "0.00",
+          watchDate: "00/00/0000",
         },
         locationInfo: {
           locationAccuracy: 0,
-          lastTransmistedDate: count < 4 ? "08/28/2026" : "00/00/0000",
+          lastTransmistedDate: "00/00/0000",
           lastThreeKnownLocation: [
             {
               latitude: 0,

@@ -46,7 +46,6 @@ TrackingData.get("/student/tracking/data/:id", async (req, res) => {
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 //
 TrackingData.post("/student/tracking/aioverview", async (req, res) => {
-  // Extracting all the variables your watch tracker sends over
   const {
     fullName,
     age,
