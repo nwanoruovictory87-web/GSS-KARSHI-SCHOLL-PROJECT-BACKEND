@@ -25,6 +25,8 @@ const upload = multer({ storage });
 const addStudentsReqData = async (req, res, next) => {
   try {
     const body = req.body;
+    console.log(body);
+    return;
     if (!body)
       return res.status(401).json({
         ok: false,
@@ -78,6 +80,7 @@ StudentsDataRouter.post(
         imageURL = url;
       }
       const body = JSON.parse(req.body["students-info"]);
+      console.log(body);
       const userData = {
         firstName: body.firstName,
         middleName: body.middleName,
@@ -176,6 +179,7 @@ StudentsDataRouter.post(
 StudentsDataRouter.get("/get/new/trackingID", async (req, res) => {
   try {
     const ID = randomUUID();
+    console.log(ID);
     return res.status(200).json({
       ok: true,
       message: "succesful",

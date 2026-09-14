@@ -102,7 +102,6 @@ function Socket(serverConnection) {
       //
       socket.emit("all-students-alert", studentsData);
     });
-
     //listen event client
     socket.on("get-live-location", (locationData, trackingID) => {
       if (tdb.has(trackingID)) {
